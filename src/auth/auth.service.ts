@@ -2,12 +2,13 @@ import { AuthDto } from './dto/auth.dto';
 import { PrismaService } from './../prisma/prisma.service';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import * as argon from 'argon2';
+import { Tokens } from './types';
 
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService) {}
   // signup
-  async signup(dto: AuthDto) {
+  async signup(dto: AuthDto): Promise<Tokens> {
     //  password hashed
     const hashPassword = await argon.hash(dto.password);
 
@@ -60,5 +61,15 @@ export class AuthService {
 
     //  send back user
     return existUser;
+  }
+
+  // logout
+  logout() {
+    return 'logout';
+  }
+
+  // refresh token
+  refreshToken() {
+    return 'refresh token';
   }
 }
