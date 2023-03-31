@@ -1,13 +1,13 @@
 version: '3.8'
 services:
-  dev-db:
-    image: postgres
+  db:
+    image: postgres:13
     ports:
       - "5434:5432"
     environment:
-      POSTGRES_USER: mandy
+      POSTGRES_USER: minji
       POSTGRES_PASSWORD: rlaalswl12!
-      POSTGRES_DB: todolist
+      POSTGRES_DB: nesttodolist
     networks:
       - nesttodolist
 networks:
