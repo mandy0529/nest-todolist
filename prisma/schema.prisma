@@ -12,9 +12,10 @@ datasource db {
 
 // User
 model User {
-  id       String @id @default(uuid())
-  email    String @unique
-  password String
+  id           String  @id @default(uuid())
+  email        String  @unique
+  password     String
+  refreshToken String?
 
   firstName String?
   lastName  String?
