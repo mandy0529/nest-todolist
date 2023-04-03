@@ -153,7 +153,8 @@ export class AuthService {
     });
 
     //  if no existUser , throw exception
-    if (!existUser) throw new ForbiddenException('Access denied');
+    if (!existUser || !existUser.refreshToken)
+      throw new ForbiddenException('Access denied');
 
     //  refreshToken match or not
     const isMatchRefreshToken = await argon.verify(
