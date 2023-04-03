@@ -1,19 +1,17 @@
-import { RefreshTokenGuard } from './../common/guards/refreshToken.guard';
-import { AccessTokenGuard } from './../common/guards/accessToken.guard';
-import { Tokens } from './types';
-import { AuthDto } from './dto/auth.dto';
-import { AuthService } from './auth.service';
 import {
   Body,
   Controller,
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { GetCurrentUser } from 'src/common/decorators';
+import { AccessTokenGuard } from './../common/guards/accessToken.guard';
+import { RefreshTokenGuard } from './../common/guards/refreshToken.guard';
+import { AuthService } from './auth.service';
+import { AuthDto } from './dto/auth.dto';
+import { Tokens } from './types';
 
 @Controller('auth')
 export class AuthController {
@@ -36,19 +34,18 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  logout(@Req() req: Request) {
-    const user = req.user;
-
-    return this.authService.logout(user['sub']);
+  logout(@GetCurrentUser('sub') userId: string) {
+    return this.authService.logout(userId);
   }
 
   // refreshtoken
   @UseGuards(RefreshTokenGuard)
   @Post('refreshToken')
   @HttpCode(HttpStatus.OK)
-  refreshToken(@Req() req: Request) {
-    const user = req.user;
-
-    return this.authService.refreshToken(user['sub'], user['refreshToken']);
+  refreshToken(
+    @GetCurrentUser('sub') userId: string,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+  ) {
+    return this.authService.refreshToken(userId, refreshToken);
   }
 }
