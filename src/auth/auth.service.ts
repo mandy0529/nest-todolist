@@ -152,7 +152,7 @@ export class AuthService {
       },
     });
 
-    //  if no existUser , throw exception
+    //  if no existUser or logout user who don't have refreshToken, throw exception
     if (!existUser || !existUser.refreshToken)
       throw new ForbiddenException('Access denied');
 

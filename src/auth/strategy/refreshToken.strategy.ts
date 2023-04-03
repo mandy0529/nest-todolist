@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 
+//  refreshToken 대한 jwt/passport 설정해주기 위한 strategy 셋팅
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
@@ -22,6 +23,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
 
+  //  진짜 refreshTokenr값 return 해주기
   async validate(req: Request, payload: any) {
     const refreshToken = req.get('authorization').replace('Bearer', '').trim();
 

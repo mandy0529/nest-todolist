@@ -7,6 +7,7 @@ import { AccessTokenGuard } from './common/guards';
 
 @Module({
   imports: [
+    //  config module setting
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -15,6 +16,7 @@ import { AccessTokenGuard } from './common/guards';
   ],
   providers: [
     {
+      //  useGuard accessToken 전역적으로 사용하기 위한 셋팅
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
     },
