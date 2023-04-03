@@ -121,13 +121,13 @@ export class AuthService {
     //  create hashrefreshtoken
     await this.createHashRefreshToken(existUser.id, tokens.refreshToken);
 
-    //  send back user
+    //  send back token
     return tokens;
   }
 
   // logout
   async logout(userId: string) {
-    // match해야하는 경우가 userId가 id일떄와 refreshToken이 비어있지않을떄 우리는 updateMany를 해줄 수 있는것.
+    // match 해야하는 경우가 userId가 id일떄와 refreshToken이 비어있지않을떄 우리는 updateMany를 해줄 수 있는것.
     // updateMany를 하는 이유는 어차피 로그아웃하면 해당 아이 아니더라도 혹시 과부하 되고있는 경우가 있을 수 있기에 다 그냥 null값으로 만들어주자
     await this.prisma.user.updateMany({
       where: {
@@ -144,7 +144,35 @@ export class AuthService {
   }
 
   // refresh token
-  refreshToken() {
-    return 'refresh token';
+  async refreshToken(userId: string, refreshToken: string) {
+    //  find existUser from prisma
+    const existUser = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    console.log({ existUser, refreshToken }, '@@@@@@@@');
+
+    //  if no existUser , throw exception
+    if (!existUser) throw new ForbiddenException('Access denied');
+
+    //  refreshToken match or not
+    const isMatchRefreshToken = await argon.verify(
+      existUser.refreshToken,
+      refreshToken,
+    );
+
+    //  if no matchRefreshToken , throw exception
+    if (!isMatchRefreshToken) throw new ForbiddenException('Access denied');
+
+    //  create accessToken, refreshToken
+    const tokens = await this.createToken(existUser.id, existUser.email);
+
+    //  create hashrefreshtoken
+    await this.createHashRefreshToken(existUser.id, tokens.refreshToken);
+
+    //  send tokens
+    return tokens;
   }
 }
