@@ -152,8 +152,6 @@ export class AuthService {
       },
     });
 
-    console.log({ existUser, refreshToken }, '@@@@@@@@');
-
     //  if no existUser , throw exception
     if (!existUser) throw new ForbiddenException('Access denied');
 
