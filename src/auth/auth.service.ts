@@ -1,14 +1,68 @@
+import { ConfigService } from '@nestjs/config';
 import { AuthDto } from './dto/auth.dto';
 import { PrismaService } from './../prisma/prisma.service';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import * as argon from 'argon2';
 import { Tokens } from './types';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
-  // signup
-  async signup(dto: AuthDto): Promise<Tokens> {
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private config: ConfigService,
+  ) {}
+
+  //  1. create token
+  async createToken(userId: string, email: string): Promise<Tokens> {
+    const [accessToken, refreshToken] = await Promise.all([
+      // accessToken
+      this.jwt.signAsync(
+        {
+          sub: userId,
+          email,
+        },
+        {
+          // 15 mins
+          expiresIn: 60 * 15,
+          secret: this.config.get('JWT_SECRET'),
+        },
+      ),
+      //  refreshToken
+      this.jwt.signAsync(
+        {
+          sub: userId,
+          email,
+        },
+        {
+          //  1 week
+          expiresIn: 60 * 60 * 24 * 7,
+          secret: this.config.get('JWT_SECRET'),
+        },
+      ),
+    ]);
+    return { accessToken, refreshToken };
+  }
+
+  //  2. createHashRefreshToken
+  async createHashRefreshToken(userId: string, refreshToken: string) {
+    // refreshtoken을 한번더 hash해주기
+    const hashRefreshToken = await argon.hash(refreshToken);
+
+    //  우리의 prisma에 update해주기
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        refreshToken: hashRefreshToken,
+      },
+    });
+  }
+
+  // 3. signup
+  async signup(dto: AuthDto) {
     //  password hashed
     const hashPassword = await argon.hash(dto.password);
 
@@ -21,9 +75,14 @@ export class AuthService {
         },
       });
 
-      // password 빼기
-      delete user.password;
-      return user;
+      //  token 발행
+      const tokens = await this.createToken(user.id, user.email);
+
+      //  create hashRefreshToken
+      await this.createHashRefreshToken(user.id, tokens.refreshToken);
+
+      //  send back tokens
+      return tokens;
     } catch (error) {
       // 에러가 있을 경우 ForbiddenException으로 날려주기
       if (error.code === 'P2002') {
@@ -31,7 +90,7 @@ export class AuthService {
       }
     }
   }
-  // signin
+  // 4. signin
   async signin(dto: AuthDto) {
     // find the user by email
     const existUser = await this.prisma.user.findUnique({
