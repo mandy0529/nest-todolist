@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { RefreshTokenGuard } from './../common/guards/refreshToken.guard';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 
 import { AuthService } from './auth.service';
@@ -32,6 +40,8 @@ export class AuthController {
   }
 
   // refreshtoken
+  @Public()
+  @UseGuards(RefreshTokenGuard)
   @Post('refreshToken')
   @HttpCode(HttpStatus.OK)
   refreshToken(
