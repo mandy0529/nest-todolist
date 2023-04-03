@@ -91,7 +91,7 @@ export class AuthService {
     }
   }
   // 4. signin
-  async signin(dto: AuthDto) {
+  async signin(dto: AuthDto): Promise<Tokens> {
     // find the user by email
     const existUser = await this.prisma.user.findUnique({
       where: {
@@ -101,7 +101,7 @@ export class AuthService {
 
     //  if no user, throw exception
     if (!existUser) {
-      throw new ForbiddenException('Credentials incorrect');
+      throw new ForbiddenException('Access denied');
     }
 
     //  compare password
@@ -112,14 +112,17 @@ export class AuthService {
 
     //  if password incorrect, throw exception
     if (!isMatchPassword) {
-      throw new ForbiddenException('Credentials incorrect');
+      throw new ForbiddenException('Access denied');
     }
 
-    //  // password 빼기
-    delete existUser.password;
+    //  create accessToken, refreshToken
+    const tokens = await this.createToken(existUser.id, existUser.email);
+
+    //  create hashrefreshtoken
+    await this.createHashRefreshToken(existUser.id, tokens.refreshToken);
 
     //  send back user
-    return existUser;
+    return tokens;
   }
 
   // logout
