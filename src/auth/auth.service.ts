@@ -126,7 +126,20 @@ export class AuthService {
   }
 
   // logout
-  logout() {
+  async logout(userId: string) {
+    // match해야하는 경우가 userId가 id일떄와 refreshToken이 비어있지않을떄 우리는 updateMany를 해줄 수 있는것.
+    // updateMany를 하는 이유는 어차피 로그아웃하면 해당 아이 아니더라도 혹시 과부하 되고있는 경우가 있을 수 있기에 다 그냥 null값으로 만들어주자
+    await this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        refreshToken: {
+          not: null,
+        },
+      },
+      data: {
+        refreshToken: null,
+      },
+    });
     return 'logout';
   }
 
