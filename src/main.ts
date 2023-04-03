@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = 5000;
 
-  //  validationPipe
+  //  global validationPipe
   app.useGlobalPipes(
     new ValidationPipe({
       // 해당하는 필드를쓰고, 나머지는 걸러주는 option
