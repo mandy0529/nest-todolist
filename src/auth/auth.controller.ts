@@ -1,3 +1,5 @@
+import { RefreshTokenGuard } from './../common/guards/refreshToken.guard';
+import { AccessTokenGuard } from './../common/guards/accessToken.guard';
 import { Tokens } from './types';
 import { AuthDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
@@ -31,7 +33,7 @@ export class AuthController {
   }
 
   // logout
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AccessTokenGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Req() req: Request) {
@@ -41,7 +43,7 @@ export class AuthController {
   }
 
   // refreshtoken
-  @UseGuards(AuthGuard('jwt-refresh'))
+  @UseGuards(RefreshTokenGuard)
   @Post('refreshToken')
   @HttpCode(HttpStatus.OK)
   refreshToken(@Req() req: Request) {
