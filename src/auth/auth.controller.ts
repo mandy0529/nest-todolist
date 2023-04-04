@@ -1,4 +1,3 @@
-import { RefreshTokenGuard } from './../common/guards/refreshToken.guard';
 import {
   Body,
   Controller,
@@ -7,8 +6,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { GetCurrentUser, Public } from 'src/common/decorators';
+import { RefreshTokenGuard } from './../common/guards/refreshToken.guard';
 
+import { GetCurrentUser, Public } from '../common/decorators';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
 import { Tokens } from './types';
