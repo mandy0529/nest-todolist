@@ -1,9 +1,9 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { describe } from 'node:test';
 import { AppController } from './../src/app.controller';
 import { AppModule } from './../src/app.module';
 import { AppService } from './../src/app.service';
-import { PrismaService } from './../src/prisma/prisma.service';
 
 describe('app e2e', () => {
   let app: INestApplication;
@@ -27,8 +27,21 @@ describe('app e2e', () => {
   });
 
   // test process
-  it.todo('should pass');
-  it.todo('should pass2');
+  // Auth
+  describe('Auth', () => {
+    describe('signup', () => {
+      it.todo('signup');
+    });
+    describe('signin', () => {
+      it.todo('signin');
+    });
+    describe('logout', () => {
+      it.todo('logou');
+    });
+    describe('refreshToken', () => {
+      it.todo('refreshtoken');
+    });
+  });
 
   // stopping logic
   afterAll(() => {
