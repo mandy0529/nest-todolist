@@ -10,5 +10,15 @@ services:
       POSTGRES_DB: nesttodolist
     networks:
       - nesttodolist
+  db-test:
+    image: postgres:13
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: minji
+      POSTGRES_PASSWORD: rlaalswl12!
+      POSTGRES_DB: nesttodolist
+    networks:
+      - nesttodolist
 networks:
   nesttodolist:
