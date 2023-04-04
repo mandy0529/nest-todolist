@@ -17,24 +17,24 @@ import { Tokens } from './types';
 export class AuthController {
   constructor(private authService: AuthService) {}
   // signup
+  @HttpCode(HttpStatus.CREATED)
   @Public()
   @Post('signup')
-  @HttpCode(HttpStatus.CREATED)
   signup(@Body() dto: AuthDto): Promise<Tokens> {
     return this.authService.signup(dto);
   }
 
   // signin
+  @HttpCode(HttpStatus.OK)
   @Public()
   @Post('signin')
-  @HttpCode(HttpStatus.OK)
   signin(@Body() dto: AuthDto): Promise<Tokens> {
     return this.authService.signin(dto);
   }
 
   // logout
-  @Post('logout')
   @HttpCode(HttpStatus.OK)
+  @Post('logout')
   logout(@GetCurrentUser('sub') userId: string) {
     return this.authService.logout(userId);
   }
